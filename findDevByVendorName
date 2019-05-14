@@ -73,7 +73,7 @@ function json
 	output=$"{\"devices\":["
 	for ((i = 0; i < ${#arr0[@]}; i++)) 
 		do
-			output+=$"{\"IP\":\"${arr0[i]}\",\"MAC\":\"${arr1[i]}\",\"VENDOR\":\"$vendor\"}"
+			output+=$"{\"IP\":\"${arr0[i]}\",\"MAC\":\"${arr1[i]}\",\"vendor\":\"$vendor\"}"
 			if [[ i -ne ${#arr0[@]}-1 ]]; then
 				output+=","
 			fi
@@ -142,6 +142,7 @@ function run {
 					var=$(eval $str) 
 					echo $var | jq  '.' > ~/.devByVendor/dependencies/vendorMacPrefix.json
 				done
+			run
 			fi
 		fi
 		exit 1
@@ -161,7 +162,9 @@ function run {
 	fi
 	nmap -sP $(ip -o -f inet addr show | awk '/scope global/' | grep -oE $IPV4REGSUBNET) >/dev/null
 	LINE=$(arp -an | egrep $MACREGEX)
-	echo "Found $(echo "$LINE" | wc -l) devices"
+	if [[ "$verbose" = "y"  ]]; then
+		echo "Found $(echo "$LINE" | wc -l) devices"	
+	fi
 	IP=$(echo $LINE | grep -oE $IPV4REGEX)
 	MAC=$(echo $LINE | grep -oE $MACREGEX)
 	

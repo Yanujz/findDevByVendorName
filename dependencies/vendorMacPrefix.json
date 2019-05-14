@@ -1,12 +1,71 @@
 {
-"vendors":[
-{"name":"wiznet","prefix":"00:08:DC"},
-{"name":"zebra","prefix":"C4:7D:CC"},
-{"name":"zebra","prefix":"00:A0:F8"},
-{"name":"zebra","prefix":"40:83:DE"},
-{"name":"zebra","prefix":"74:67:F7"},
-{"name":"zebra","prefix":"5C:0E:8B"},
-{"name":"zebra","prefix":"00:15:70"}, 
-{"name":"zebra","prefix":"00:07:4D"} 
-]
+  "vendors": [
+    {
+      "name": "wiznet",
+      "prefix": "00:08:DC"
+    },
+    {
+      "name": "zebra",
+      "prefix": "C4:7D:CC"
+    },
+    {
+      "name": "zebra",
+      "prefix": "00:A0:F8"
+    },
+    {
+      "name": "zebra",
+      "prefix": "40:83:DE"
+    },
+    {
+      "name": "zebra",
+      "prefix": "74:67:F7"
+    },
+    {
+      "name": "zebra",
+      "prefix": "5C:0E:8B"
+    },
+    {
+      "name": "zebra",
+      "prefix": "00:15:70"
+    },
+    {
+      "name": "zebra",
+      "prefix": "00:07:4D"
+    },
+    {
+      "name": "sitecom",
+      "prefix": "64:D1:A3"
+    },
+    {
+      "name": "sitecom",
+      "prefix": "00:0C:F6"
+    },
+    {
+      "name": "xiaomi",
+      "prefix": "10:2A:B3"
+    },
+    {
+      "name": "xiaomi",
+      "prefix": "74:23:44"
+    },
+    {
+      "name": "xiaomi",
+      "prefix": "C4:6A:B7"
+    },
+    {
+      "name": "xiaomi",
+      "prefix": "68:DF:DD"
+    },
+    {
+      "name": "xiaomi",
+      "prefix": "64:B4:73"
+    },
+    {
+      "name": "xiaomi",
+      "prefix": "74:51:BA"
+    },{
+      "name": "xiaomi",
+      "prefix": "80:35:C1"
+    }
+  ]
 }
