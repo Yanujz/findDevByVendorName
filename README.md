@@ -3,7 +3,8 @@ Find devices in a network using vendor name.
 ## Description 
 
 This script provides you a fast way to search devices by vendor name. In order to use this script you must install jq
-## Ubuntu 18.04.2 LTS
+## Prerequisites
+### Ubuntu 18.04.2 LTS
 ```
 sudo apt install jq
 ```
@@ -34,4 +35,4 @@ If you want to add more vendors you have to edit "vendorMacPrefix.json" file loc
 ## Author
   **Yanujz** - [Github Profile](https://github.com/Yanujz)
 ## License
-This project is licensed under the MIT License - see the LICENSE.md file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/Yanujz/findDevByVendorName/blob/master/LICENSE.md) file for details
