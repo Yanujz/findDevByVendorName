@@ -1,9 +1,4 @@
 #!/bin/bash
-
-: '
-In order to use this script you must install jq
-'
-
 #abort on error
 set -e
 filename="output"
@@ -126,6 +121,7 @@ function output
 
 
 function run {
+	MACPREFIX="([0-9a-zA-Z]{2}:){2}([0-9a-zA-Z]{2})"
 	parse_args "$@"
 	CMD="cat ~/.devByVendor/dependencies/vendorMacPrefix.json | jq '.vendors[] | select(.name==\"$vendor\") | .prefix' -r"
 	VENDORPREFIX=$(eval $CMD)
@@ -134,7 +130,19 @@ function run {
 		echo    # (optional) move to a new line
 		if [[ $anwser =~ ^[Yy]$ ]]
 		then
-	   		firefox https://macvendors.co/results/$vendor
+			var=$(curl --silent https://macvendors.co/results/$vendor | grep -oE $MACPREFIX)
+			echo $var
+			read -p "Do you want it add to db? [y-N] " -n 1 -r anwser
+			echo    # (optional) move to a new line
+			local arr=(${var})
+			if [[ $anwser =~ ^[Yy]$ ]]; then
+				for i in "${arr[@]}"; do
+					index=$(jq '.vendors | length' ~/.devByVendor/dependencies/vendorMacPrefix.json)
+					str="jq '.vendors[$index] += {\"name\":\"${vendor}\",\"prefix\":\"${i}\"}' < ~/.devByVendor/dependencies/vendorMacPrefix.json"
+					var=$(eval $str) 
+					echo $var | jq  '.' > ~/.devByVendor/dependencies/vendorMacPrefix.json
+				done
+			fi
 		fi
 		exit 1
 	fi
