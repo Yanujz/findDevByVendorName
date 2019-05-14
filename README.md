@@ -34,4 +34,4 @@ If you want to add more vendors you have to edit "vendorMacPrefix.json" file loc
 ## Author
   **Yanujz** - [Github Profile](https://github.com/Yanujz)
 ## License
-This project is licensed under the MIT License - see the LICENSE.md file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/Yanujz/findDevByVendorName/blob/master/LICENSE.md) file for details
