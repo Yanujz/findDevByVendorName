@@ -3,7 +3,7 @@ Find devices in a network using vendor name.
 ## Description 
 
 This script provides you a fast way to search devices by vendor name. In order to use this script you must install jq
-## Dependencies
+## Prerequisites
 ### Ubuntu 18.04.2 LTS
 ```
 sudo apt install jq
