@@ -1,0 +1,8 @@
+#!/bin/bash
+echo "Installing dependencies..."
+if [ -d ~/.devByVendor ]; then rm -Rf ~/.devByVendor; fi
+mkdir ~/.devByVendor
+cp -r ./dependencies ~/.devByVendor/
+sudo cp  ./findDevByVendorName /usr/local/bin
+sudo chmod +x /usr/local/bin/findDevByVendorName
+echo "Done."

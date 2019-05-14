@@ -1,0 +1,177 @@
+#!/bin/bash
+
+: '
+In order to use this script you must install jq
+'
+
+#abort on error
+set -e
+filename="output"
+function usage
+{
+	echo ""
+    echo "Usage: findDevByVendorName -v [vendor] -o [output] -f [filename]"
+    echo "   ";
+    echo "  -v 	| --vendor     : Specify vendor name";
+    echo "  -f 	| --filename   : Specify filename";
+    echo "  -vv	| --verbose    : Set verbose";
+    echo "  -o 	| --output     : Set output {json|jsonPretty|raw|file}";
+    echo "  -h 	| --help       : Prompt usage message";
+    echo " Example:"
+    echo "./findDevByVendorName -v wiznet -vv -o jsonPretty"
+    exit 0
+}
+
+function parse_args
+{
+	local outParams=(json jsonPretty raw file)
+  	#positional args
+  	args=()
+
+  	# named args
+	while [ "$1" != "" ]; do
+		case "$1" in
+	  		-v | --vendor )		vendor="$2";    shift;;
+			-o | --output)		__output="$2"; 	shift;;
+			-f | --filename) 	filename="$2"; 	shift;;
+  	      	-h | --help )       usage;          exit;; # quit and show usage
+  	        * )
+  	        args+=("$1")             # if no match, add it to the positional args
+  	    esac
+  	    shift # move to next kv pair
+  	done
+
+  	# restore positional args
+  	set -- "${args[@]}"
+
+  	# set positionals to vars
+  	positional_1="${args[0]}"
+  	positional_2="${args[1]}"
+	
+  	# validate required args
+ 	if [[ -z "${vendor}" ]]; then
+ 	    echo "Invalid argument"
+ 	    usage
+ 	    exit;
+ 	fi
+ 	ok=""
+	for i in "${outParams[@]}"; do
+	  	if [[ "$i" = "$__output" ]] ; then
+	  		ok="y"
+	  		break
+	  	fi
+	done
+	if [[ "$ok" != "y" ]]; then
+		echo "Param [ -o | --output ] not valid"
+		usage
+	fi
+	for i in "${args[@]}"; do
+	  if [[ "$i" = "-vv" ]] || [[ "$i" = "--verbose" ]]; then
+	  	verbose="y"
+	  fi
+	   # do whatever on $i
+	done
+}
+
+function json 
+{
+	output=$"{\"devices\":["
+	for ((i = 0; i < ${#arr0[@]}; i++)) 
+		do
+			output+=$"{\"IP\":\"${arr0[i]}\",\"MAC\":\"${arr1[i]}\",\"VENDOR\":\"$vendor\"}"
+			if [[ i -ne ${#arr0[@]}-1 ]]; then
+				output+=","
+			fi
+	done
+	output+="]}"
+}
+
+function jsonPretty 
+{
+	json
+}
+
+function output 
+{
+	output=
+	case "$__output" in
+	        json)
+	            json
+	            echo $output
+	            ;;
+	         
+	        jsonPretty)
+	            jsonPretty
+				echo -e $output | jq '.'
+	            ;;
+	        raw)
+	            for ((i = 0; i < ${#arr0[@]}; i++)) 
+					do
+			 		output+=$"${arr0[i]} ${arr1[i]}"
+			 		if [[ i -ne ${#arr0[@]}-1 ]]; then
+			 			output+="\n"
+			 		fi
+				done
+				echo -e $output
+	            ;;
+	        file)
+	           	jsonPretty
+				echo -e $output | jq '.' > $filename.json
+	            ;;
+	                
+	        *)
+			
+	esac
+}
+
+
+function run {
+	parse_args "$@"
+	CMD="cat ~/.devByVendor/dependencies/vendorMacPrefix.json | jq '.vendors[] | select(.name==\"$vendor\") | .prefix' -r"
+	VENDORPREFIX=$(eval $CMD)
+	if [[ -z $VENDORPREFIX ]]; then
+		read -p "Prefix not found. Do you want search it on internet? [y-N] " -n 1 -r anwser
+		echo    # (optional) move to a new line
+		if [[ $anwser =~ ^[Yy]$ ]]
+		then
+	   		firefox https://macvendors.co/results/$vendor
+		fi
+		exit 1
+	fi
+	
+	#echo "Found prefix: $VENDORPREFIX"
+	VENDORPREFIX=$(echo $VENDORPREFIX | tr " " "|")
+	IPV4REGEX="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
+	IPV4REGSUBNET="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\/[0-9]{1,2})"
+	MACREGEX="(${VENDORPREFIX,,}):([0-9a-fA-F]{2}:?){3}"
+	if [[ "$verbose" = "y"  ]]; then
+		echo "Flushing Arp table"
+	fi
+	sudo ip -s -s neigh flush all > /dev/null
+	if [[ "$verbose" = "y"  ]]; then
+		echo "Scanning network"
+	fi
+	nmap -sP $(ip -o -f inet addr show | awk '/scope global/' | grep -oE $IPV4REGSUBNET) >/dev/null
+	LINE=$(arp -an | egrep $MACREGEX)
+	echo "Found $(echo "$LINE" | wc -l) devices"
+	IP=$(echo $LINE | grep -oE $IPV4REGEX)
+	MAC=$(echo $LINE | grep -oE $MACREGEX)
+	
+	if [ -z "$IP" ]; then
+		echo "No device found"
+		exit 1
+	fi
+	
+	arr0=(${IP})
+	arr1=(${MAC})
+	
+
+	output
+
+	
+	
+	exit 0
+}
+
+
+run "$@";

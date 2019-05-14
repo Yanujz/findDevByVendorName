@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "Removing files..."
+if [ -d ~/.devByVendor ]; then 
+	$(rm -r ~/.devByVendor)
+fi
+if [ -f /usr/local/bin/findDevByVendorName ]; then 
+	$(sudo rm /usr/local/bin/findDevByVendorName)
+fi
+echo "Done."
