@@ -64,7 +64,6 @@ function parse_args
 	  if [[ "$i" = "-vv" ]] || [[ "$i" = "--verbose" ]]; then
 	  	verbose="y"
 	  fi
-	   # do whatever on $i
 	done
 }
 
